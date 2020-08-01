@@ -1,0 +1,41 @@
+# rack-teapot
+
+A silly [Rack](https://rack.github.io) app/middleware that responds with [418
+I'm a Teapot](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418) to
+requests for coffee.
+
+To use:
+
+```
+$ bundle install
+$ bundle exec rackup >/dev/null &
+$ curl -i -w "\n" http://localhost:9292/$(ruby -rcgi -e 'puts CGI.escape("☕️")')
+HTTP/1.1 418
+Content-Type: text/plain; charset=UTF-8
+Content-Length: 4
+Server: WEBrick/1.6.0 (Ruby/2.7.1/2020-03-31)
+Date: Sat, 01 Aug 2020 02:42:53 GMT
+Connection: Keep-Alive
+
+🍵
+$ kill %1
+```
+
+As a standalone application, it returns 404 for any other request.  Used as
+middleware, it passes non-coffee requests to the next application.
+
+To integrate with an existing application, add this to your `Gemfile`:
+
+```
+gem 'rack-teapot', git: 'https://github.com/benabik/rack-teapot'
+```
+
+For a Rack application add `use RackTeapot` to your `config.ru`.  For a
+[Rails](https://rubyonrails.org) application, add `config.middleware.use
+RackTeapot` to your `config/application.rb`.
+
+## TODO
+
+* Add railtie to automagically add middleware.
+* Add text to status message (at first glance, this doesn't seem possible with pure Rack)
+* Tests
